@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienmaginot.todo.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.*
 
 class TaskListFragment : Fragment() {
 
@@ -31,6 +33,21 @@ class TaskListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.adapter = adapter
+        val fab = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
+        fab.setOnClickListener { addTask() }
+    }
+
+    fun addTask()
+    {
+        val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
+        taskList = taskList + newTask
+        refreshAdapter()
+    }
+
+    fun refreshAdapter()
+    {
+        adapter.currentList = taskList
+        adapter.notifyDataSetChanged()
     }
 
 
