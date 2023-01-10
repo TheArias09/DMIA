@@ -46,6 +46,10 @@ class TaskListFragment : Fragment() {
         binding?.recyclerView?.adapter = adapter
         binding?.floatingActionButton?.setOnClickListener{ addTask() }
 
+        adapter.onClickDelete = {
+            task -> taskList = taskList - task
+            refreshAdapter()
+        }
     }
 
     fun addTask()

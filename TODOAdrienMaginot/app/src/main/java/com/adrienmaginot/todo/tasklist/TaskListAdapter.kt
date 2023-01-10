@@ -3,6 +3,7 @@ package com.adrienmaginot.todo.tasklist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -22,6 +23,7 @@ object MyItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
 // l'IDE va râler ici car on a pas encore implémenté les méthodes nécessaires
 class TaskListAdapter : ListAdapter<Task,TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback){
 
+    var onClickDelete: (Task) -> Unit = {}
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,6 +32,8 @@ class TaskListAdapter : ListAdapter<Task,TaskListAdapter.TaskViewHolder>(MyItems
             textView.text = task.title
             val descriptionView = itemView.findViewById<TextView>(R.id.task_description)
             descriptionView.text = task.description
+            val imageButtonView = itemView.findViewById<ImageButton>(R.id.imageButton)
+            imageButtonView.setOnClickListener{ onClickDelete(task) }
         }
     }
 
