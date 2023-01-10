@@ -1,5 +1,6 @@
 package com.adrienmaginot.todo.tasklist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienmaginot.todo.R
 import com.adrienmaginot.todo.databinding.FragmentTaskListBinding
+import com.adrienmaginot.todo.detail.DetailActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
@@ -42,14 +44,17 @@ class TaskListFragment : Fragment() {
         val fab = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
         fab.setOnClickListener { addTask() }
         */
+        val intent = Intent(context, DetailActivity::class.java)
 
         binding?.recyclerView?.adapter = adapter
-        binding?.floatingActionButton?.setOnClickListener{ addTask() }
+        binding?.floatingActionButton?.setOnClickListener{ startActivity(intent) }//addTask() }
 
         adapter.onClickDelete = {
             task -> taskList = taskList - task
             refreshAdapter()
         }
+
+
     }
 
     fun addTask()
