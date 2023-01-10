@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienmaginot.todo.R
@@ -24,6 +25,11 @@ class TaskListFragment : Fragment() {
     private val adapter = TaskListAdapter()
 
     private var binding: FragmentTaskListBinding? = null
+
+    private val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        result ->  
+        taskList = taskList
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +53,7 @@ class TaskListFragment : Fragment() {
         val intent = Intent(context, DetailActivity::class.java)
 
         binding?.recyclerView?.adapter = adapter
-        binding?.floatingActionButton?.setOnClickListener{ startActivity(intent) }//addTask() }
+        binding?.floatingActionButton?.setOnClickListener{ createTask.launch(intent) }//addTask() }
 
         adapter.onClickDelete = {
             task -> taskList = taskList - task
