@@ -38,15 +38,20 @@ class DetailActivity : ComponentActivity() {
 
 @Composable
 fun Detail() {
-    Column {
-        Text(text = "Task Detail", style = MaterialTheme.typography.h2)
-        Text(text = "title")
-        Text(text = "description")
-        Button(onClick = { /*TODO*/ }) {
-        }
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(32.dp)
+    ) {
+        Text(
+            text = "Task Detail",
+            style = MaterialTheme.typography.h2
+        )
+        Text("title")
+        Text("description")
+        Button( content = {
+            Text(text = "Submit")
+        }, onClick = {})
     }
-    Modifier.padding(16.dp)
-    Arrangement.spacedBy(16.dp)
 }
 
 @Preview(showBackground = true)
