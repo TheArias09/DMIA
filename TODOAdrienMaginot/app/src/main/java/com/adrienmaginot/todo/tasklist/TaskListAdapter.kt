@@ -20,7 +20,7 @@ object MyItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
 }
 
 // l'IDE va râler ici car on a pas encore implémenté les méthodes nécessaires
-class TaskListAdapter : ListAdapter<Task,TaskListAdapter.TaskViewHolder>(){
+class TaskListAdapter : ListAdapter<Task,TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback){
 
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
