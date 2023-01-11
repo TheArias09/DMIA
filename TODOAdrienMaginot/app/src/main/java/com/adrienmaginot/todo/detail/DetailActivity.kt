@@ -36,7 +36,6 @@ class DetailActivity : ComponentActivity() {
                         finish()
                     }
                     Detail(onValidate)
-
                 }
             }
         }
@@ -54,20 +53,26 @@ fun Detail(onValidate: (Task) -> Unit) {
             style = MaterialTheme.typography.h2
         )
 
-        var newTitle: (String) -> Unit = {}
+        /*var newTitle: (String) -> Unit = {}
         var title : String = "Title"
         OutlinedTextField(value = title, onValueChange = newTitle)
+        */
+        val title = remember { mutableStateOf(TextFieldValue("Title")) }
+        OutlinedTextField(value = title.value,
+            onValueChange = { title.value = it })
 
-        var newDescription: (String) -> Unit = {}
+       /* var newDescription: (String) -> Unit = {}
         var description : String = "description"
-
         var newTask by remember { mutableStateOf(Task(id = UUID.randomUUID().toString(), title = title, description = description))}
-
         OutlinedTextField(value = description, onValueChange = newDescription)
+        */
+        val description = remember { mutableStateOf(TextFieldValue("Description")) }
+        OutlinedTextField(value = description.value,
+            onValueChange = { description.value = it })
         Button( content = {
             Text(text = "Submit")
         }, onClick = {
-            //val newTask = Task(id = UUID.randomUUID().toString(), title = title, description = description)
+            val newTask = Task(id = UUID.randomUUID().toString(), title = title.value.text, description = description.value.text)
             //newTask = newTask.copy(title = "new title")
 
             onValidate(newTask)
@@ -75,6 +80,7 @@ fun Detail(onValidate: (Task) -> Unit) {
         })
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
