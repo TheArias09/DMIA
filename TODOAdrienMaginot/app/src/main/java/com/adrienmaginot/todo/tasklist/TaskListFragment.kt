@@ -1,5 +1,6 @@
 package com.adrienmaginot.todo.tasklist
 
+import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,8 +28,8 @@ class TaskListFragment : Fragment() {
     private var binding: FragmentTaskListBinding? = null
 
     private val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        result ->  
-        taskList = taskList
+        result ->
+        
     }
 
     override fun onCreateView(

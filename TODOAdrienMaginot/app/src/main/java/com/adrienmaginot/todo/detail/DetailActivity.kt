@@ -18,8 +18,11 @@ import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.adrienmaginot.todo.detail.ui.theme.TODOAdrienMaginotTheme
+import com.adrienmaginot.todo.tasklist.Task
+import java.util.*
 
 class DetailActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,7 +32,12 @@ class DetailActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Detail()
+                    val onValidate: (Task) -> Unit = {
+                            task -> this.intent.putExtra("task", task)
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+                    Detail(onValidate)
                 }
             }
         }
@@ -37,7 +45,7 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail() {
+fun Detail(onValidate: (Task) -> Unit) {
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
@@ -50,7 +58,11 @@ fun Detail() {
         Text("description")
         Button( content = {
             Text(text = "Submit")
-        }, onClick = {})
+        }, onClick = {
+            val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !")
+            onValidate(newTask)
+
+        })
     }
 }
 
@@ -58,6 +70,7 @@ fun Detail() {
 @Composable
 fun DetailPreview() {
     TODOAdrienMaginotTheme {
-        Detail()
+
+        //Detail(onValidate)
     }
 }
