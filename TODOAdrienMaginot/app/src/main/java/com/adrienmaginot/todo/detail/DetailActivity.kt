@@ -36,6 +36,7 @@ class DetailActivity : ComponentActivity() {
                         finish()
                     }
                     Detail(onValidate)
+
                 }
             }
         }

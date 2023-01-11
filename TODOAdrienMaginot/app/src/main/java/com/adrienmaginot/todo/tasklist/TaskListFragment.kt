@@ -34,6 +34,10 @@ class TaskListFragment : Fragment() {
         refreshAdapter()
     }
 
+    private val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result ->
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
