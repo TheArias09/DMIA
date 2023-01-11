@@ -21,6 +21,8 @@ import java.util.*
 
 class DetailActivity : ComponentActivity() {
 
+    var initialTask : Task? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -35,7 +37,9 @@ class DetailActivity : ComponentActivity() {
                         setResult(RESULT_OK, intent)
                         finish()
                     }
-                    Detail(onValidate)
+                    initialTask = intent?.getSerializableExtra("taskToEdit") as Task?
+
+                    Detail(onValidate, this)
                 }
             }
         }
@@ -43,7 +47,7 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(onValidate: (Task) -> Unit) {
+fun Detail(onValidate: (Task) -> Unit, activity: DetailActivity) {
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
@@ -57,25 +61,35 @@ fun Detail(onValidate: (Task) -> Unit) {
         var title : String = "Title"
         OutlinedTextField(value = title, onValueChange = newTitle)
         */
-        val title = remember { mutableStateOf(TextFieldValue("Title")) }
-        OutlinedTextField(value = title.value,
-            onValueChange = { title.value = it })
+        /*val title = remember { mutableStateOf(activity.initialTask?.title) }
+        if (title.value == null){OutlinedTextField(value = "title",
+            onValueChange = { title.value = it })}
+        else {OutlinedTextField(value = title.value!!,
+            onValueChange = { title.value = it })}
+        */
 
        /* var newDescription: (String) -> Unit = {}
         var description : String = "description"
         var newTask by remember { mutableStateOf(Task(id = UUID.randomUUID().toString(), title = title, description = description))}
         OutlinedTextField(value = description, onValueChange = newDescription)
         */
-        val description = remember { mutableStateOf(TextFieldValue("Description")) }
-        OutlinedTextField(value = description.value,
-            onValueChange = { description.value = it })
+        /*val description = remember { mutableStateOf(activity.initialTask?.description) }
+        if (description.value == null){OutlinedTextField(value = "description",
+            onValueChange = { description.value = it })}
+        else {OutlinedTextField(value = description.value!!,
+            onValueChange = { description.value = it })}
+        */
+        var task by remember { mutableStateOf(Task(title = "", id = UUID.randomUUID().toString(), description = ""))}
+        if (activity.initialTask != null){task = activity.initialTask!!}
+        OutlinedTextField(value = task.title, onValueChange = {task = task.copy(title = it)})
+        OutlinedTextField(value = task.description, onValueChange = {task = task.copy(description = it)})
         Button( content = {
             Text(text = "Submit")
         }, onClick = {
-            val newTask = Task(id = UUID.randomUUID().toString(), title = title.value.text, description = description.value.text)
+            //val newTask = Task(id = UUID.randomUUID().toString(), title = title.value!!, description = description.value!!)
             //newTask = newTask.copy(title = "new title")
 
-            onValidate(newTask)
+            onValidate(task)
 
         })
     }

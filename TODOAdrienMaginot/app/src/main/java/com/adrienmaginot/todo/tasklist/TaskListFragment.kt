@@ -36,6 +36,10 @@ class TaskListFragment : Fragment() {
 
     private val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result ->
+        val task = result.data?.getSerializableExtra("task") as Task
+        result.data?.removeExtra("task")
+        refreshAdapter()
+
     }
 
     override fun onCreateView(
@@ -65,6 +69,10 @@ class TaskListFragment : Fragment() {
         adapter.onClickDelete = {
             task -> taskList = taskList - task
             refreshAdapter()
+        }
+
+        adapter.onClickEdit = {
+            task -> intent.putExtra("taskToEdit", task)
         }
 
 
