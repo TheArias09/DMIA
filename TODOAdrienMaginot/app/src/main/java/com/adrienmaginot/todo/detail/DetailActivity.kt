@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.modifier.modifierLocalOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.adrienmaginot.todo.detail.ui.theme.TODOAdrienMaginotTheme
@@ -54,12 +52,23 @@ fun Detail(onValidate: (Task) -> Unit) {
             text = "Task Detail",
             style = MaterialTheme.typography.h2
         )
-        Text("title")
-        Text("description")
+
+        var newTitle: (String) -> Unit = {}
+        var title : String = "Title"
+        OutlinedTextField(value = title, onValueChange = newTitle)
+
+        var newDescription: (String) -> Unit = {}
+        var description : String = "description"
+
+        var newTask by remember { mutableStateOf(Task(id = UUID.randomUUID().toString(), title = title, description = description))}
+
+        OutlinedTextField(value = description, onValueChange = newDescription)
         Button( content = {
             Text(text = "Submit")
         }, onClick = {
-            val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !")
+            //val newTask = Task(id = UUID.randomUUID().toString(), title = title, description = description)
+            //newTask = newTask.copy(title = "new title")
+
             onValidate(newTask)
 
         })

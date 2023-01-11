@@ -29,7 +29,9 @@ class TaskListFragment : Fragment() {
 
     private val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         result ->
-        
+        val task = result.data?.getSerializableExtra("task") as Task
+        taskList = taskList + task
+        refreshAdapter()
     }
 
     override fun onCreateView(
