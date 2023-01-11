@@ -18,29 +18,28 @@ import java.util.*
 class TaskListFragment : Fragment() {
 
     private var taskList = listOf(
-    Task(id = "id_1", title = "Task 1", description = "description 1"),
-    Task(id = "id_2", title = "Task 2"),
-    Task(id = "id_3", title = "Task 3")
+        Task(id = "id_1", title = "Task 1", description = "description 1"),
+        Task(id = "id_2", title = "Task 2"),
+        Task(id = "id_3", title = "Task 3")
     )
 
     private val adapter = TaskListAdapter()
 
     private var binding: FragmentTaskListBinding? = null
 
-    private val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        result ->
-        val task = result.data?.getSerializableExtra("task") as Task
-        taskList = taskList + task
-        refreshAdapter()
-    }
+    private val createTask =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = result.data?.getSerializableExtra("task") as Task
+            taskList = taskList + task
+            refreshAdapter()
+        }
 
-    private val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result ->
-        val task = result.data?.getSerializableExtra("task") as Task
-        result.data?.removeExtra("task")
-        refreshAdapter()
-
-    }
+    private val editTask =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = result.data?.getSerializableExtra("task") as Task
+            taskList = taskList.map { if (it.id == task.id) task else it }
+            refreshAdapter()
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,29 +63,29 @@ class TaskListFragment : Fragment() {
         val intent = Intent(context, DetailActivity::class.java)
 
         binding?.recyclerView?.adapter = adapter
-        binding?.floatingActionButton?.setOnClickListener{ createTask.launch(intent) }//addTask() }
+        binding?.floatingActionButton?.setOnClickListener {
+            intent.removeExtra("taskToEdit")
+            createTask.launch(intent)
+        }
 
-        adapter.onClickDelete = {
-            task -> taskList = taskList - task
+        adapter.onClickDelete = { task ->
+            taskList = taskList - task
             refreshAdapter()
         }
 
-        adapter.onClickEdit = {
-            task -> intent.putExtra("taskToEdit", task)
+        adapter.onClickEdit = { task ->
+            intent.putExtra("taskToEdit", task)
+            editTask.launch(intent)
         }
-
-
     }
 
-    fun addTask()
-    {
+    fun addTask() {
         val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
         taskList = taskList + newTask
         refreshAdapter()
     }
 
-    fun refreshAdapter()
-    {
+    fun refreshAdapter() {
         adapter.submitList(taskList)
         adapter.notifyDataSetChanged()
     }
