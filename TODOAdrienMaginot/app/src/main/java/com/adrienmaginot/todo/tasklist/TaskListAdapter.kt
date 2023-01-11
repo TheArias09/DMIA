@@ -11,21 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.adrienmaginot.todo.R
 
 object MyItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
-    override fun areItemsTheSame(oldItem: Task, newItem: Task) : Boolean {
-        return newItem == oldItem// comparaison: est-ce la même "entité" ? => même id?
+    override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
+        return newItem == oldItem  // comparaison: est-ce la même "entité" ? => même id?
     }
 
-    override fun areContentsTheSame(oldItem: Task, newItem: Task) : Boolean {
-        return newItem.description == oldItem.description// comparaison: est-ce le même "contenu" ? => mêmes valeurs? (avec data class: simple égalité)
+    override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
+        return newItem.description == oldItem.description  // comparaison: est-ce le même "contenu" ? => mêmes valeurs? (avec data class: simple égalité)
     }
 }
 
 // l'IDE va râler ici car on a pas encore implémenté les méthodes nécessaires
-class TaskListAdapter : ListAdapter<Task,TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback){
-
-    var onClickDelete: (Task) -> Unit = {}
-
-    var onClickEdit: (Task) -> Unit = {}
+class TaskListAdapter(val listener: TaskListListener) :
+    ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback) {
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -35,21 +32,21 @@ class TaskListAdapter : ListAdapter<Task,TaskListAdapter.TaskViewHolder>(MyItems
             val descriptionView = itemView.findViewById<TextView>(R.id.task_description)
             descriptionView.text = task.description
             val imageButtonView = itemView.findViewById<ImageButton>(R.id.imageButton)
-            imageButtonView.setOnClickListener{ onClickDelete(task) }
+            imageButtonView.setOnClickListener { listener.onClickDelete(task) }
             val imageButton2View = itemView.findViewById<ImageButton>(R.id.imageButton2)
-            imageButton2View.setOnClickListener{ onClickEdit(task) }
+            imageButton2View.setOnClickListener { listener.onClickEdit(task) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
         return TaskViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.bind(currentList[position])
     }
-
 }
 
 /*

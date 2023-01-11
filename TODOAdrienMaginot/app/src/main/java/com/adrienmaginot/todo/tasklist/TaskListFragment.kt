@@ -23,7 +23,18 @@ class TaskListFragment : Fragment() {
         Task(id = "id_3", title = "Task 3")
     )
 
-    private val adapter = TaskListAdapter()
+    private val adapterListener : TaskListListener = object : TaskListListener {
+        override fun onClickDelete(task: Task) {
+            taskList = taskList - task
+            refreshAdapter()
+        }
+        override fun onClickEdit(task: Task) {
+            val intent = Intent(context, DetailActivity::class.java)
+            intent.putExtra("taskToEdit", task)
+            editTask.launch(intent)
+        }
+    }
+    private val adapter = TaskListAdapter(adapterListener)
 
     private var binding: FragmentTaskListBinding? = null
 
@@ -60,22 +71,12 @@ class TaskListFragment : Fragment() {
         val fab = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
         fab.setOnClickListener { addTask() }
         */
-        val intent = Intent(context, DetailActivity::class.java)
 
         binding?.recyclerView?.adapter = adapter
         binding?.floatingActionButton?.setOnClickListener {
+            val intent = Intent(context, DetailActivity::class.java)
             intent.removeExtra("taskToEdit")
             createTask.launch(intent)
-        }
-
-        adapter.onClickDelete = { task ->
-            taskList = taskList - task
-            refreshAdapter()
-        }
-
-        adapter.onClickEdit = { task ->
-            intent.putExtra("taskToEdit", task)
-            editTask.launch(intent)
         }
     }
 
