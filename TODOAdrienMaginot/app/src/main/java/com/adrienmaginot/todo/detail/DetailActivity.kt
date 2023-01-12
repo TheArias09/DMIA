@@ -1,5 +1,6 @@
 package com.adrienmaginot.todo.detail
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,12 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalOf
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.adrienmaginot.todo.detail.ui.theme.TODOAdrienMaginotTheme
 import com.adrienmaginot.todo.tasklist.Task
 import java.util.*
@@ -35,9 +34,31 @@ class DetailActivity : ComponentActivity() {
                         setResult(RESULT_OK, intent)
                         finish()
                     }
-                    val initialTask = intent?.getSerializableExtra("taskToEdit") as Task?
 
-                    Detail(onValidate, initialTask)
+                    val onShare: (Task) -> Unit = { task ->
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "${task.title}: ${task.description}")
+                            type = "text/plain"
+                        }
+
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        ContextCompat.startActivity(this, shareIntent, null)
+                    }
+
+                    var initialTask = Task(
+                        title = "Title",
+                        id = UUID.randomUUID().toString(),
+                        description = "Description"
+                    )
+                    if (intent.action == Intent.ACTION_SEND) // Text shared from other app
+                        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                            initialTask = Task(id = initialTask.id, title = "", description = it)
+                        }!!
+
+                    val editTask = intent.getSerializableExtra("taskToEdit") as Task?
+
+                    Detail(onValidate, onShare,editTask ?: initialTask)
                 }
             }
         }
@@ -45,7 +66,7 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(onValidate: (Task) -> Unit, initialTask: Task?) {
+fun Detail(onValidate: (Task) -> Unit, onShare: (Task) -> Unit, initialTask: Task) {
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
@@ -78,15 +99,7 @@ fun Detail(onValidate: (Task) -> Unit, initialTask: Task?) {
             onValueChange = { description.value = it })}
         */
 
-        var task by remember {
-            mutableStateOf(
-                initialTask ?: Task(
-                    title = "Title",
-                    id = UUID.randomUUID().toString(),
-                    description = "Description"
-                )
-            )
-        }
+        var task by remember { mutableStateOf(initialTask) }
 
         OutlinedTextField(
             value = task.title,
@@ -104,6 +117,9 @@ fun Detail(onValidate: (Task) -> Unit, initialTask: Task?) {
 
             onValidate(task)
         })
+        Button(content = {
+            Text(text = "Share")
+        }, onClick = { onShare(task) })
     }
 }
 
