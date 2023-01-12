@@ -1,6 +1,5 @@
 package com.adrienmaginot.todo.tasklist
 
-import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,11 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
-import com.adrienmaginot.todo.R
 import com.adrienmaginot.todo.databinding.FragmentTaskListBinding
 import com.adrienmaginot.todo.detail.DetailActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
 class TaskListFragment : Fragment() {
@@ -23,11 +19,12 @@ class TaskListFragment : Fragment() {
         Task(id = "id_3", title = "Task 3")
     )
 
-    private val adapterListener : TaskListListener = object : TaskListListener {
+    private val adapterListener: TaskListListener = object : TaskListListener {
         override fun onClickDelete(task: Task) {
             taskList = taskList - task
             refreshAdapter()
         }
+
         override fun onClickEdit(task: Task) {
             val intent = Intent(context, DetailActivity::class.java)
             intent.putExtra("taskToEdit", task)
@@ -72,12 +69,28 @@ class TaskListFragment : Fragment() {
         fab.setOnClickListener { addTask() }
         */
 
+        // Restore saved taskList
+        if (savedInstanceState?.containsKey("count") == true) {
+            val count = savedInstanceState.getSerializable("count") as Int
+            taskList = listOf()
+            for (i in 1..count)
+                taskList = taskList + (savedInstanceState.getSerializable("task${i}") as Task)
+            refreshAdapter()
+        }
+
         binding?.recyclerView?.adapter = adapter
         binding?.floatingActionButton?.setOnClickListener {
             val intent = Intent(context, DetailActivity::class.java)
             intent.removeExtra("taskToEdit")
             createTask.launch(intent)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable("count", taskList.count())
+        for (i in 1..taskList.count())
+            outState.putSerializable("task${i}", taskList[i - 1])
     }
 
     fun addTask() {
