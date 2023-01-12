@@ -1,11 +1,15 @@
 package com.adrienmaginot.todo.data
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.http.GET
 
 object Api {
     private const val TOKEN = "6a82a124db4ea2603af47e2dd9aea753eb2d2be0"
@@ -36,4 +40,22 @@ object Api {
             .addConverterFactory(jsonSerializer.asConverterFactory("application/json".toMediaType()))
             .build()
     }
+    val userWebService : UserWebService by lazy {
+        retrofit.create(UserWebService::class.java)
+    }
+}
+
+@Serializable
+data class User(
+    @SerialName("email")
+    val email: String,
+    @SerialName("full_name")
+    val name: String,
+    @SerialName("avatar_medium")
+    val avatar: String? = null
+)
+
+interface UserWebService {
+    @GET("/sync/v9/user/")
+    suspend fun fetchUser(): Response<User>
 }
