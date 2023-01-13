@@ -1,6 +1,7 @@
 package com.adrienmaginot.todo.data
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -14,6 +15,7 @@ import retrofit2.http.GET
 object Api {
     private const val TOKEN = "6a82a124db4ea2603af47e2dd9aea753eb2d2be0"
 
+    @OptIn(ExperimentalSerializationApi::class)
     private val retrofit by lazy {
         // client HTTP
         val okHttpClient = OkHttpClient.Builder()

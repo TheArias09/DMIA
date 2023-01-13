@@ -5,10 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.adrienmaginot.todo.R
+import com.adrienmaginot.todo.data.Api
 import com.adrienmaginot.todo.databinding.FragmentTaskListBinding
 import com.adrienmaginot.todo.detail.DetailActivity
+import kotlinx.coroutines.launch
 import java.util.*
 
 class TaskListFragment : Fragment() {
@@ -104,5 +109,11 @@ class TaskListFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            val user = Api.userWebService.fetchUser().body()!!
+        }
+    }
 
 }
