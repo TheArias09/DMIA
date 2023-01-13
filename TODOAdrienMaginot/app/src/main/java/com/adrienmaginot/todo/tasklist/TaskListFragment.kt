@@ -2,17 +2,22 @@ package com.adrienmaginot.todo.tasklist
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.adrienmaginot.todo.R
 import com.adrienmaginot.todo.data.Api
 import com.adrienmaginot.todo.databinding.FragmentTaskListBinding
 import com.adrienmaginot.todo.detail.DetailActivity
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -89,6 +94,15 @@ class TaskListFragment : Fragment() {
             intent.removeExtra("taskToEdit")
             createTask.launch(intent)
         }
+
+        // Dans onViewCreated()
+        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
+            viewModel.tasksStateFlow.collect { newList ->
+                // cette lambda est executée à chaque fois que la liste est mise à jour dans le VM
+                // -> ici, on met à jour la liste dans l'adapter
+                adapter.submitList(newList)
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -113,7 +127,13 @@ class TaskListFragment : Fragment() {
         super.onResume()
         lifecycleScope.launch {
             val user = Api.userWebService.fetchUser().body()!!
+            binding?.textView3?.text = user.name
         }
+        // Dans onResume()
+        viewModel.refresh() // on demande de rafraîchir les données sans attendre le retour directement
+
     }
+
+    private val viewModel: TasksListViewModel by viewModels()
 
 }

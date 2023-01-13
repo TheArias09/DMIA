@@ -1,5 +1,6 @@
 package com.adrienmaginot.todo.data
 
+import com.adrienmaginot.todo.tasklist.Task
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
@@ -10,7 +11,11 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 object Api {
     private const val TOKEN = "6a82a124db4ea2603af47e2dd9aea753eb2d2be0"
@@ -45,6 +50,9 @@ object Api {
     val userWebService : UserWebService by lazy {
         retrofit.create(UserWebService::class.java)
     }
+    val tasksWebService : TasksWebService by lazy {
+        retrofit.create(TasksWebService::class.java)
+    }
 }
 
 @Serializable
@@ -60,4 +68,19 @@ data class User(
 interface UserWebService {
     @GET("/sync/v9/user/")
     suspend fun fetchUser(): Response<User>
+
+    @POST("/rest/v2/tasks/")
+    suspend fun create(@Body task: Task): Response<Task>
+
+    @POST("/rest/v2/tasks/{id}")
+    suspend fun update(@Body task: Task, @Path("id") id: String = task.id): Response<Task>
+
+// Inspirez vous d'au dessus et de la doc de l'API pour compléter:
+    @DELETE("/rest/v2/tasks/{id}")
+    suspend fun delete(@Path("id") id: String): Response<Unit>
+}
+
+interface TasksWebService {
+    @GET("/rest/v2/tasks/")
+    suspend fun fetchTasks(): Response<List<Task>>
 }
