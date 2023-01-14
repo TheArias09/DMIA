@@ -25,8 +25,43 @@ class TasksListViewModel : ViewModel() {
     }
 
     // à compléter plus tard:
-    fun add(task: Task) {}
-    fun edit(task: Task) {}
-    fun remove(task: Task) {}
+    fun add(task: Task) {
+        viewModelScope.launch {
+            val response = webService.create(task) // TODO: appel réseau
+            if (!response.isSuccessful) {
+                Log.e("Network", "Error: ${response.raw()}")
+                return@launch
+            }
+
+            val newTask = response.body()!!
+            tasksStateFlow.value = tasksStateFlow.value + newTask
+        }
+    }
+
+    fun edit(task: Task) {
+        viewModelScope.launch {
+            val response = webService.edit(task) // TODO: appel réseau
+            if (!response.isSuccessful) {
+                Log.e("Network", "Error: ${response.raw()}")
+                return@launch
+            }
+
+            val updatedTask = response.body()!!
+            //TODO : check ce qui correspond à id chez updatedTask (question 12)
+            tasksStateFlow.value = tasksStateFlow.value.map { if (it.id == updatedTask.id) updatedTask else it } as List<Task>
+        }
+    }
+
+    fun remove(task: Task) {
+        viewModelScope.launch {
+            val response = webService.delete(task.id) // TODO: appel réseau
+            if (!response.isSuccessful) {
+                Log.e("Network", "Error: ${response.raw()}")
+                return@launch
+            }
+
+            tasksStateFlow.value = tasksStateFlow.value - task
+        }
+    }
 
 }

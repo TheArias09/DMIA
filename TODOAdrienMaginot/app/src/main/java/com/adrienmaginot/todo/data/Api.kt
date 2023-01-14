@@ -68,19 +68,19 @@ data class User(
 interface UserWebService {
     @GET("/sync/v9/user/")
     suspend fun fetchUser(): Response<User>
-
-    @POST("/rest/v2/tasks/")
-    suspend fun create(@Body task: Task): Response<Task>
-
-    @POST("/rest/v2/tasks/{id}")
-    suspend fun update(@Body task: Task, @Path("id") id: String = task.id): Response<Task>
-
-// Inspirez vous d'au dessus et de la doc de l'API pour compléter:
-    @DELETE("/rest/v2/tasks/{id}")
-    suspend fun delete(@Path("id") id: String): Response<Unit>
 }
 
 interface TasksWebService {
     @GET("/rest/v2/tasks/")
     suspend fun fetchTasks(): Response<List<Task>>
+
+    @POST("/rest/v2/tasks/")
+    suspend fun create(@Body task: Task): Response<Task>
+
+    @POST("/rest/v2/tasks/{id}")
+    suspend fun edit(@Body task: Task, @Path("id") id: String = task.id): Response<Task>
+
+    // Inspirez vous d'au dessus et de la doc de l'API pour compléter:
+    @DELETE("/rest/v2/tasks/{id}")
+    suspend fun delete(@Path("id") id: String): Response<Unit>
 }
