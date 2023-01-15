@@ -58,6 +58,7 @@ class UserActivity : AppCompatActivity() {
                 }
             }
 
+
             val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 // Callback is invoked after the user selects a media item or closes the
                 // photo picker.
@@ -66,6 +67,10 @@ class UserActivity : AppCompatActivity() {
                 }
             }
 
+            val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    success ->
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
 
             Column {
                 AsyncImage(
@@ -81,8 +86,8 @@ class UserActivity : AppCompatActivity() {
                 )
                 Button(
                     onClick = {
-                        //Manifest.permission.READ_EXTERNAL_STORAGE
-                        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        //pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     },
                     content = { Text("Pick photo") }
                 )
