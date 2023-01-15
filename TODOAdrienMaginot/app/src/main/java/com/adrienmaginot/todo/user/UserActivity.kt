@@ -1,11 +1,13 @@
 package com.adrienmaginot.todo.user
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -43,6 +45,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class UserActivity : AppCompatActivity() {
+
+    private val captureUri by lazy {
+        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
@@ -51,10 +58,23 @@ class UserActivity : AppCompatActivity() {
         setContent {
             var bitmap: Bitmap? by remember { mutableStateOf(null) }
             var uri: Uri? by remember { mutableStateOf(null) }
+
+
+
+            /*
             val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                 bitmap = it
                 lifecycleScope.launch {
                     Api.userWebService.updateAvatar(bitmap!!.toRequestBody())
+                }
+            }
+             */
+
+            val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+                success ->
+                if (success) uri = captureUri
+                lifecycleScope.launch {
+                    Api.userWebService.updateAvatar(uri!!.toRequestBody())
                 }
             }
 
@@ -80,7 +100,7 @@ class UserActivity : AppCompatActivity() {
                 )
                 Button(
                     onClick = {
-                        takePicture.launch()
+                        takePicture.launch(captureUri)
                     },
                     content = { Text("Take picture") }
                 )
