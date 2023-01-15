@@ -7,15 +7,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 object Api {
     private const val TOKEN = "6a82a124db4ea2603af47e2dd9aea753eb2d2be0"
@@ -68,6 +65,10 @@ data class User(
 interface UserWebService {
     @GET("/sync/v9/user/")
     suspend fun fetchUser(): Response<User>
+
+    @Multipart
+    @POST("sync/v9/update_avatar")
+    suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<User>
 }
 
 interface TasksWebService {

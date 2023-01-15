@@ -129,7 +129,11 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             val user = Api.userWebService.fetchUser().body()!!
             binding?.textView3?.text = user.name
-            binding?.imageView?.load("https://ih1.redbubble.net/image.3485158063.7564/st,small,845x845-pad,1000x1000,f8f8f8.jpg")
+            //binding?.imageView?.load("https://ih1.redbubble.net/image.3485158063.7564/st,small,845x845-pad,1000x1000,f8f8f8.jpg")
+
+            binding?.imageView?.load(user.avatar) {
+                error(R.drawable.ic_launcher_background) // image par défaut en cas d'erreur
+            }
 
         }
         // Dans onResume()
